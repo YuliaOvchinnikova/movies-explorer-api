@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
 const cookieParser = require("cookie-parser");
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 
 const app = express();
 
@@ -18,7 +18,36 @@ const { requestLogger, errorLogger } = require("./middlewares/logger");
 const { login, createUser } = require("./controllers/users");
 const auth = require("./middlewares/auth");
 
+const allowedCors = [
+  "http://movies-library.nomoredomains.work/signup",
+  "https://movies-library.nomoredomains.work/signup",
+];
+
 app.use(requestLogger);
+
+app.use((req, res, next) => {
+  const { origin } = req.headers;
+  if (allowedCors.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Credentials", "true");
+  }
+
+  const { method } = req;
+
+  const DEFAULT_ALLOWED_METHODS = "GET,HEAD,PUT,PATCH,POST,DELETE";
+
+  if (method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", DEFAULT_ALLOWED_METHODS);
+  }
+
+  const requestHeaders = req.headers["access-control-request-headers"];
+  if (method === "OPTIONS") {
+    res.header("Access-Control-Allow-Headers", requestHeaders);
+    return res.end();
+  }
+  next();
+  return {};
+});
 
 app.post(
   "/signin",
@@ -70,3 +99,4 @@ mongoose.connect("mongodb://localhost:27017/bitfilmsdb", {
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`)
 }) 
+
