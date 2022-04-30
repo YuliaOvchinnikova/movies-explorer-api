@@ -5,7 +5,7 @@ const { isURL } = require("validator");
 const {
   getSavedMovies,
   createMovie,
-  deleteSavedMovieById
+  deleteSavedMovieById,
 } = require("../controllers/movies");
 
 router.get("/", getSavedMovies);
@@ -39,12 +39,12 @@ router.post("/", celebrate({
     nameEN: Joi.string().required(),
     movieId: Joi.string().required(),
   }),
-}),createMovie);
+}), createMovie);
 
 router.delete("/:movieId", celebrate({
   params: Joi.object().keys({
     movieId: Joi.string().required(),
   }),
-}),deleteSavedMovieById);
+}), deleteSavedMovieById);
 
 module.exports = router;

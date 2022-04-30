@@ -11,13 +11,26 @@ module.exports.getSavedMovies = (req, res, next) => {
 
 module.exports.createMovie = (req, res, next) => {
   const owner = req.user._id;
-  const { country, director, duration, year, 
-    description, image, trailerLink, thumbnail, nameRU, nameEN, 
-    movieId } = req.body;
+  const {
+    country, director, duration, year,
+    description, image, trailerLink, thumbnail, nameRU, nameEN,
+    movieId,
+  } = req.body;
 
-    Movie.create({ country, director, duration, year, 
-      description, image, trailerLink, thumbnail, nameRU, nameEN, 
-      movieId, owner })
+  Movie.create({
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailerLink,
+    thumbnail,
+    nameRU,
+    nameEN,
+    movieId,
+    owner,
+  })
     .then((movie) => res.send({ data: movie }))
     .catch((err) => {
       if (err.name === "ValidationError") {

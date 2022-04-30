@@ -1,6 +1,7 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 const { isURL } = require("validator");
-const ObjectId = mongoose.Schema.Types.ObjectId;
+
+const { ObjectId } = mongoose.Schema.Types;
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -56,7 +57,7 @@ const movieSchema = new mongoose.Schema({
   },
   owner: {
     type: ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   movieId: {
@@ -72,6 +73,6 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-})
+});
 
 module.exports = mongoose.model("movie", movieSchema);

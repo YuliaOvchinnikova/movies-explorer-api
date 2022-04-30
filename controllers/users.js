@@ -9,7 +9,6 @@ const ErrorUnauthorized = require("../errors/ErrorUnauthorized");
 const { NODE_ENV, JWT_SECRET } = process.env;
 const SALT_ROUNDS = 10;
 
-
 module.exports.getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
