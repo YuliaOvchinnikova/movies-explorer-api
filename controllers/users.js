@@ -16,32 +16,36 @@ module.exports.getUserInfo = (req, res, next) => {
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === "CastError") {
-        next(new ErrorValidation(`Некорректный id ${req.params.id}`));
-      } else if (err.name === "ValidationError") {
-        next(new ErrorValidation("Неправильные данные"));
-      } else {
-        next(err);
-      }
+      next(err);
     });
 };
 
 module.exports.updateUserInfo = (req, res, next) => {
-  const { name } = req.body;
+  const { name, email } = req.body;
 
-  User.findByIdAndUpdate(
-    req.user._id,
-    { name },
-    { new: true, runValidators: true },
-  )
-    .orFail(() => {
-      throw new ErrorNotFound(`Пользователь с id ${req.params.id} не найден.`);
-    })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === "CastError") {
-        next(new ErrorValidation(`Некорректный id ${req.params.id}`));
-      } else if (err.name === "ValidationError") {
+  User.findOne({ email })
+    .then((foundUser) => {
+      if (foundUser) {
+        throw new ErrorConflict("Пользователь с таким email уже зарегистрирован.");
+      }
+      User.findByIdAndUpdate(
+        req.user._id,
+        { name, email },
+        { new: true, runValidators: true },
+      )
+        .orFail(() => {
+          throw new ErrorNotFound(`Пользователь с id ${req.params.id} не найден.`);
+        })
+        .then((user) => res.send({ data: user }))
+        .catch((err) => {
+          if (err.name === "ValidationError" || err.email === "ValidationError") {
+            next(new ErrorValidation("Неправильные данные"));
+          } else {
+            next(err);
+          }
+        });
+    }).catch((err) => {
+      if (err.name === "ValidationError" || err.email === "ValidationError") {
         next(new ErrorValidation("Неправильные данные"));
       } else {
         next(err);

@@ -37,13 +37,13 @@ router.post("/", celebrate({
     }),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
-    movieId: Joi.string().required(),
+    movieId: Joi.number().required(),
   }),
 }), createMovie);
 
-router.delete("/:movieId", celebrate({
+router.delete("/:movie_id", celebrate({
   params: Joi.object().keys({
-    movieId: Joi.string().required(),
+    movie_id: Joi.string().hex().length(24),
   }),
 }), deleteSavedMovieById);
 

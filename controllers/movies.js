@@ -49,7 +49,16 @@ module.exports.deleteSavedMovieById = (req, res, next) => {
       if (req.user._id !== movie.owner.toString()) {
         throw new ErrorForbidden("Вы не можете удалить не ваш сохраненный фильм");
       }
-      Movie.findOneAndRemove({ id: req.params.movieId }).then(() => res.send({ data: movie }));
+      Movie.findOneAndRemove({ id: req.params.movieId }).then(() => res.send({ data: movie }))
+        .catch((err) => {
+          if (err.name === "CastError") {
+            next(new ErrorValidation(`Некорректный id ${req.params.cardId}`));
+          } else if (err.name === "ValidationError") {
+            next(new ErrorValidation("Неправильные данные"));
+          } else {
+            next(err);
+          }
+        });
     })
     .catch((err) => {
       if (err.name === "CastError") {

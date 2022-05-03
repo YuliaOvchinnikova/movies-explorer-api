@@ -1,22 +1,18 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const cookieParser = require("cookie-parser");
 
-const { PORT = 3001 } = process.env;
+const { PORT = 3001, NODE_ENV, MONGODB_URL } = process.env;
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const { errors } = require("celebrate");
-const { celebrate, Joi } = require("celebrate");
 require("dotenv").config();
 const ErrorNotFound = require("./errors/ErrorNotFound");
 const errorHandler = require("./middlewares/errorHandler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-const { login, createUser } = require("./controllers/users");
-const auth = require("./middlewares/auth");
 
 const allowedCors = [
   "http://movies-library.nomoredomains.work/signup",
@@ -49,53 +45,22 @@ app.use((req, res, next) => {
   return {};
 });
 
-app.post(
-  "/signin",
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().email().required(),
-      password: Joi.string().required().min(4),
-    }),
-  }),
-  login,
-);
+app.use(require("./routes"));
 
-app.post(
-  "/signup",
-  celebrate({
-    body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      email: Joi.string().required().email(),
-      password: Joi.string().required().min(4),
-    }),
-  }),
-  createUser,
-);
-
-app.use(cookieParser());
-app.use(auth);
-
-app.get("/signout", (req, res) => {
-  res.clearCookie("jwt");
-  res.redirect("/");
+app.use(() => {
+  throw new ErrorNotFound("Страница не найдена!");
 });
-
-app.use("/users", require("./routes/users"));
-app.use("/movies", require("./routes/movies"));
 
 app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 
-app.use(() => {
-  throw new ErrorNotFound("Страница не найдена!");
+mongoose.connect(NODE_ENV === "production" ? MONGODB_URL : "mongodb://localhost:27017/bitfilmsdb", {
+  useNewUrlParser: true,
 });
 
 mongoose.connect("mongodb://localhost:27017/bitfilmsdb", {
   useNewUrlParser: true,
 });
 
-app.listen(PORT, () => {
-  // eslint-disable-next-line
-  console.log(`App listening on port ${PORT}`);
-});
+app.listen(PORT);
