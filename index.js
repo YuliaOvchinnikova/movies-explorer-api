@@ -59,8 +59,4 @@ mongoose.connect(NODE_ENV === "production" ? MONGODB_URL : "mongodb://localhost:
   useNewUrlParser: true,
 });
 
-mongoose.connect("mongodb://localhost:27017/bitfilmsdb", {
-  useNewUrlParser: true,
-});
-
 app.listen(PORT);
