@@ -1,7 +1,7 @@
-const Movie = require("../models/movie");
-const ErrorNotFound = require("../errors/ErrorNotFound");
-const ErrorValidation = require("../errors/ErrorValidation");
-const ErrorForbidden = require("../errors/ErrorForbidden");
+const Movie = require('../models/movie');
+const ErrorNotFound = require('../errors/ErrorNotFound');
+const ErrorValidation = require('../errors/ErrorValidation');
+const ErrorForbidden = require('../errors/ErrorForbidden');
 
 module.exports.getSavedMovies = (req, res, next) => {
   Movie.find({})
@@ -33,8 +33,8 @@ module.exports.createMovie = (req, res, next) => {
   })
     .then((movie) => res.send({ data: movie }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        next(new ErrorValidation("Данные для создания карточки не корректны."));
+      if (err.name === 'ValidationError') {
+        next(new ErrorValidation('Данные для создания карточки не корректны.'));
       } else {
         next(err);
       }
@@ -42,29 +42,29 @@ module.exports.createMovie = (req, res, next) => {
 };
 
 module.exports.deleteSavedMovieById = (req, res, next) => {
-  Movie.findById(req.params.movieId).orFail(() => {
+  Movie.findById(req.params.movie_id).orFail(() => {
     throw new ErrorNotFound(`Фильм с id ${req.params.cardId} для пользовтеля ${req.user._id} не найден.`);
   })
     .then((movie) => {
       if (req.user._id !== movie.owner.toString()) {
-        throw new ErrorForbidden("Вы не можете удалить не ваш сохраненный фильм");
+        throw new ErrorForbidden('Вы не можете удалить не ваш сохраненный фильм');
       }
-      Movie.findOneAndRemove({ id: req.params.movieId }).then(() => res.send({ data: movie }))
+      Movie.findOneAndRemove({ id: req.params.movie_id }).then(() => res.send({ data: movie }))
         .catch((err) => {
-          if (err.name === "CastError") {
+          if (err.name === 'CastError') {
             next(new ErrorValidation(`Некорректный id ${req.params.cardId}`));
-          } else if (err.name === "ValidationError") {
-            next(new ErrorValidation("Неправильные данные"));
+          } else if (err.name === 'ValidationError') {
+            next(new ErrorValidation('Неправильные данные'));
           } else {
             next(err);
           }
         });
     })
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === 'CastError') {
         next(new ErrorValidation(`Некорректный id ${req.params.cardId}`));
-      } else if (err.name === "ValidationError") {
-        next(new ErrorValidation("Неправильные данные"));
+      } else if (err.name === 'ValidationError') {
+        next(new ErrorValidation('Неправильные данные'));
       } else {
         next(err);
       }

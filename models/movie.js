@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { isURL } = require("validator");
+const mongoose = require('mongoose');
+const { isURL } = require('validator');
 
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -29,7 +29,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(url) {
-        return isURL(url, { protocols: ["http", "https"], require_protocol: true });
+        return isURL(url, { protocols: ['http', 'https'], require_protocol: true });
       },
       message: (props) => `${props.value} не валидная ссылка.`,
     },
@@ -39,7 +39,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(url) {
-        return isURL(url, { protocols: ["http", "https"], require_protocol: true });
+        return isURL(url, { protocols: ['http', 'https'], require_protocol: true });
       },
       message: (props) => `${props.value} не валидная ссылка.`,
     },
@@ -50,14 +50,14 @@ const movieSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(url) {
-        return isURL(url, { protocols: ["http", "https"], require_protocol: true });
+        return isURL(url, { protocols: ['http', 'https'], require_protocol: true });
       },
       message: (props) => `${props.value} не валидная ссылка.`,
     },
   },
   owner: {
     type: ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   movieId: {
@@ -75,4 +75,4 @@ const movieSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("movie", movieSchema);
+module.exports = mongoose.model('movie', movieSchema);

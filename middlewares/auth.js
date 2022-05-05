@@ -1,12 +1,12 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const ErrorUnauthorized = require("../errors/ErrorUnauthorized");
+const ErrorUnauthorized = require('../errors/ErrorUnauthorized');
 
 module.exports = (req, res, next) => {
   if (!req.cookies.jwt) {
-    next(new ErrorUnauthorized("Пользователь не зарегистрирован."));
+    next(new ErrorUnauthorized('Пользователь не зарегистрирован.'));
     return;
   }
 
@@ -16,10 +16,10 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(
       token,
-      NODE_ENV === "production" ? JWT_SECRET : "dev-secret",
+      NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
     );
   } catch (err) {
-    next(new ErrorUnauthorized("Пользователь не зарегистрирован."));
+    next(new ErrorUnauthorized('Пользователь не зарегистрирован.'));
     return;
   }
 
