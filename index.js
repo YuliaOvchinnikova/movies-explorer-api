@@ -15,8 +15,8 @@ const errorHandler = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const allowedCors = [
-  'http://movies-library.nomoredomains.work/signup',
-  'https://movies-library.nomoredomains.work/signup',
+  'http://movies-library.nomoredomains.work',
+  'https://movies-library.nomoredomains.work',
 ];
 
 app.use(requestLogger);
