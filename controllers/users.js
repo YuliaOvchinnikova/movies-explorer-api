@@ -25,8 +25,10 @@ module.exports.updateUserInfo = (req, res, next) => {
 
   User.findOne({ email })
     .then((foundUser) => {
-      if (foundUser) {
-        throw new ErrorConflict('Пользователь с таким email уже зарегистрирован.');
+      if (foundUser._id.toString() !== req.user._id) {
+        throw new ErrorConflict(
+          'Пользователь с таким email уже зарегистрирован.',
+        );
       }
       User.findByIdAndUpdate(
         req.user._id,
@@ -34,17 +36,23 @@ module.exports.updateUserInfo = (req, res, next) => {
         { new: true, runValidators: true },
       )
         .orFail(() => {
-          throw new ErrorNotFound(`Пользователь с id ${req.params.id} не найден.`);
+          throw new ErrorNotFound(
+            `Пользователь с id ${req.params.id} не найден.`,
+          );
         })
         .then((user) => res.send({ data: user }))
         .catch((err) => {
-          if (err.name === 'ValidationError' || err.email === 'ValidationError') {
+          if (
+            err.name === 'ValidationError'
+            || err.email === 'ValidationError'
+          ) {
             next(new ErrorValidation('Неправильные данные'));
           } else {
             next(err);
           }
         });
-    }).catch((err) => {
+    })
+    .catch((err) => {
       if (err.name === 'ValidationError' || err.email === 'ValidationError') {
         next(new ErrorValidation('Неправильные данные'));
       } else {
@@ -54,14 +62,14 @@ module.exports.updateUserInfo = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const {
-    name, email, password,
-  } = req.body;
+  const { name, email, password } = req.body;
 
   User.findOne({ email })
     .then((user) => {
       if (user) {
-        throw new ErrorConflict('Пользователь с таким email уже зарегистрирован.');
+        throw new ErrorConflict(
+          'Пользователь с таким email уже зарегистрирован.',
+        );
       }
       return bcrypt.hash(password, SALT_ROUNDS);
     })

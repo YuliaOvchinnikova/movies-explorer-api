@@ -55,8 +55,13 @@ app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 
-mongoose.connect(NODE_ENV === 'production' ? MONGODB_URL : 'mongodb://localhost:27017/bitfilmsdb', {
-  useNewUrlParser: true,
-});
+mongoose.connect(
+  NODE_ENV === 'production'
+    ? MONGODB_URL
+    : 'mongodb://localhost:27017/bitfilmsdb',
+  {
+    useNewUrlParser: true,
+  },
+);
 
 app.listen(PORT);
