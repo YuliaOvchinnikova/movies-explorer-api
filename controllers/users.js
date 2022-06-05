@@ -61,6 +61,14 @@ module.exports.updateUserInfo = (req, res, next) => {
     });
 };
 
+function createToken(id) {
+  return jwt.sign(
+    { _id: id },
+    NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+    { expiresIn: '7d' },
+  );
+}
+
 module.exports.createUser = (req, res, next) => {
   const { name, email, password } = req.body;
 
@@ -79,6 +87,11 @@ module.exports.createUser = (req, res, next) => {
       password: hash,
     }))
     .then((user) => {
+      const token = createToken(user._id);
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+      });
       res.send({
         data: {
           name: user.name,
@@ -100,13 +113,7 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-
-        { expiresIn: '7d' },
-      );
-
+      const token = createToken(user._id);
       res
         .cookie('jwt', token, {
           maxAge: 3600000 * 24 * 7,
