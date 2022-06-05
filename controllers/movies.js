@@ -49,7 +49,7 @@ module.exports.deleteSavedMovieById = (req, res, next) => {
       if (req.user._id !== movie.owner.toString()) {
         throw new ErrorForbidden('Вы не можете удалить не ваш сохраненный фильм');
       }
-      Movie.deleteOne({ id: req.params.movie_id }).then(() => res.send({ data: movie }));
+      Movie.deleteOne({ _id: req.params.movie_id }).then(() => res.send({ data: movie }));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
