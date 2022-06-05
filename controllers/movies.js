@@ -4,7 +4,7 @@ const ErrorValidation = require('../errors/ErrorValidation');
 const ErrorForbidden = require('../errors/ErrorForbidden');
 
 module.exports.getSavedMovies = (req, res, next) => {
-  Movie.find({})
+  Movie.find({ owner: req.user._id })
     .then((movies) => res.send({ data: movies }))
     .catch((err) => next(err));
 };
